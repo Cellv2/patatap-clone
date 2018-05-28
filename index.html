@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Patatap Clone</title>
+    <link rel="stylesheet" href="src/styles.css">
+    <script src="src/paper-full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.0.12/howler.min.js"></script>
+
+    <script type="text/paperscript" canvas="myCanvas">
+
+        //store initial colours and sounds in object
+        var keypressData = {
+            q: {
+              sound: new Howl({
+                src: ["src/sounds/bubbles.mp3"]
+              }),
+              colour: "#1abc9c"
+            },
+            w: {
+              sound: new Howl({
+                src: ["src/sounds/clay.mp3"]
+              }),
+              colour: "#2ecc71"
+            },
+            e: {
+              sound: new Howl({
+                src: ["src/sounds/confetti.mp3"]
+              }),
+              colour: "#3498db"
+            },
+            r: {
+              sound: new Howl({
+                src: ["src/sounds/corona.mp3"]
+              }),
+              colour: "#9b59b6"
+            },
+            t: {
+              sound: new Howl({
+                src: ["src/sounds/dotted-spiral.mp3"]
+              }),
+              colour: "#34495e"
+            },
+            y: {
+              sound: new Howl({
+                src: ["src/sounds/flash-1.mp3"]
+              }),
+              colour: "#16a085"
+            },
+            u: {
+              sound: new Howl({
+                src: ["src/sounds/flash-2.mp3"]
+              }),
+              colour: "#27ae60"
+            },
+            i: {
+              sound: new Howl({
+                src: ["src/sounds/flash-3.mp3"]
+              }),
+              colour: "#2980b9"
+            },
+            o: {
+              sound: new Howl({
+                src: ["src/sounds/glimmer.mp3"]
+              }),
+              colour: "#8e44ad"
+            },
+            p: {
+              sound: new Howl({
+                src: ["src/sounds/moon.mp3"]
+              }),
+              colour: "#2c3e50"
+            },
+            a: {
+              sound: new Howl({
+                src: ["src/sounds/pinwheel.mp3"]
+              }),
+              colour: "#f1c40f"
+            },
+            s: {
+              sound: new Howl({
+                src: ["src/sounds/piston-1.mp3"]
+              }),
+              colour: "#e67e22"
+            },
+            d: {
+              sound: new Howl({
+                src: ["src/sounds/piston-2.mp3"]
+              }),
+              colour: "#e74c3c"
+            },
+            f: {
+              sound: new Howl({
+                src: ["src/sounds/prism-1.mp3"]
+              }),
+              colour: "#95a5a6"
+            },
+            g: {
+              sound: new Howl({
+                src: ["src/sounds/prism-2.mp3"]
+              }),
+              colour: "#f39c12"
+            },
+            h: {
+              sound: new Howl({
+                src: ["src/sounds/prism-3.mp3"]
+              }),
+              colour: "#d35400"
+            },
+            j: {
+              sound: new Howl({
+                src: ["src/sounds/splits.mp3"]
+              }),
+              colour: "#1abc9c"
+            },
+            k: {
+              sound: new Howl({
+                src: ["src/sounds/squiggle.mp3"]
+              }),
+              colour: "#2ecc71"
+            },
+            l: {
+              sound: new Howl({
+                src: ["src/sounds/strike.mp3"]
+              }),
+              colour: "#3498db"
+            },
+            z: {
+              sound: new Howl({
+                src: ["src/sounds/suspension.mp3"]
+              }),
+              colour: "#9b59b6"
+            },
+            x: {
+              sound: new Howl({
+                src: ["src/sounds/timer.mp3"]
+              }),
+              colour: "#34495e"
+            },
+            c: {
+              sound: new Howl({
+                src: ["src/sounds/ufo.mp3"]
+              }),
+              colour: "#16a085"
+            },
+            v: {
+              sound: new Howl({
+                src: ["src/sounds/veil.mp3"]
+              }),
+              colour: "#27ae60"
+            },
+            b: {
+              sound: new Howl({
+                src: ["src/sounds/wipe.mp3"]
+              }),
+              colour: "#2980b9"
+            },
+            n: {
+              sound: new Howl({
+                src: ["src/sounds/zig-zag.mp3"]
+              }),
+              colour: "#8e44ad"
+            },
+            m: {
+              sound: new Howl({
+                src: ["src/sounds/moon.mp3"]
+              }),
+              colour: "#2c3e50"
+            }
+        }; 
+
+        //store all circle objects
+        var circleArr = [];
+
+        //handle keypress events
+        function onKeyDown(event) {
+            
+            //only do something if keypressData object contains values for the key pressed
+            if (keypressData[event.key]) {
+                //generate random point in current viewport
+                //http://paperjs.org/tutorials/geometry/mathematical-operations/
+                var maxPoint = new Point(view.size.width, view.size.height);
+                var rndPoint = maxPoint * Point.random();
+                
+                //create new circle and fill colour in based on key pressed
+                var newCircle = new Path.Circle(rndPoint, 420);
+                newCircle.fillColor = keypressData[event.key].colour;
+    
+                //push new circle into array
+                circleArr.push(newCircle);
+    
+                //play Howler sound based on key pressed
+                keypressData[event.key].sound.play()
+            }
+        };
+
+        //handle circle animations
+        function onFrame(event) {
+            for (var i = 0; i < circleArr.length; i++) {
+                circleArr[i].fillColor.hue += 1;
+                circleArr[i].scale(.98);
+                
+                //if area is less than 1, remove element from canvas and array, then decrement i
+                //this is to clean up after the circle is no longer visibile
+                if (circleArr[i].area < 1) {
+                    circleArr[i].remove()
+                    circleArr.splice(i, 1);
+                    i--;
+                }
+            }
+        };
+
+    </script>
+</head>
+
+<body>
+    <canvas id="myCanvas" resize></canvas>
+
+</body>
+
+</html>
